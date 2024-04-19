@@ -19,7 +19,7 @@ const ModalComponent = (props: ModalProps) => {
       <div className="ml-auto p-2">
         <div
           ref={ref}
-          className="animate-slide-in-left h-full w-[480px] rounded-lg bg-white p-4 "
+          className="h-full w-[480px] animate-slide-in-left rounded-lg bg-white p-4 "
         >
           <h1 className="text-xl font-bold">Modal</h1>
           <p>Content</p>
@@ -35,16 +35,8 @@ const ModalWithPortal = (props: ModalProps) => {
   return createPortal(ModalComponent(props), globalThis.document.body);
 };
 
-const ModalWithoutPortal = (props: ModalProps) => {
-  if (!props.open) return null;
-
-  return <ModalComponent {...props} />;
-};
-
 function App() {
   const { toggle, value: open } = useBoolean();
-  const { toggle: toggleWithoutPortal, value: openWithoutPortal } =
-    useBoolean();
 
   return (
     <div className="relative flex h-dvh flex-col items-center justify-center gap-8 overflow-hidden">
@@ -56,19 +48,6 @@ function App() {
           Open with Portal
         </button>
         <ModalWithPortal open={open} toggle={toggle} />
-      </div>
-
-      <div className="relative flex h-40 w-80 items-center justify-center rounded-lg bg-slate-100">
-        <button
-          onClick={() => toggleWithoutPortal()}
-          className="flex items-center justify-center rounded-lg bg-slate-800 px-4 py-1 font-light text-slate-50"
-        >
-          Open without Portal
-        </button>
-        <ModalWithoutPortal
-          open={openWithoutPortal}
-          toggle={toggleWithoutPortal}
-        />
       </div>
     </div>
   );
