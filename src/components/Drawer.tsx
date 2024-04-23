@@ -2,37 +2,41 @@ import { Fragment, createContext, useContext, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useOnClickOutside, useBoolean } from 'usehooks-ts';
 
-type ModalContext = {
+type DrawerContext = {
   open: boolean;
+  onClose: () => void;
+  onOpen: () => void;
   toggle: () => void;
 };
 
-const ModalContext = createContext({} as ModalContext);
+const DrawerContext = createContext({} as DrawerContext);
 
-type ModalProps = {
+type DrawerProps = {
   children: React.ReactNode;
 };
 
-const Modal = (props: ModalProps) => {
+const Drawer = (props: DrawerProps) => {
   const { children } = props;
 
-  const { value: open, toggle } = useBoolean();
+  const { value: open, toggle, setFalse, setTrue } = useBoolean();
 
   const value = {
     open,
     toggle,
+    onClose: setFalse,
+    onOpen: setTrue,
   };
 
   return (
-    <ModalContext.Provider value={value}>{children}</ModalContext.Provider>
+    <DrawerContext.Provider value={value}>{children}</DrawerContext.Provider>
   );
 };
 
-const useModal = () => {
-  const context = useContext(ModalContext);
+const useDrawer = () => {
+  const context = useContext(DrawerContext);
 
   if (!context) {
-    throw new Error('useModal must be used within a ModalProvider');
+    throw new Error('useDrawer must be used within a DrawerProvider');
   }
 
   return context;
@@ -45,12 +49,12 @@ type TriggerProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 const Trigger = (props: TriggerProps) => {
   const { children, onClick, ...rest } = props;
 
-  const { toggle } = useModal();
+  const { onOpen } = useDrawer();
 
   return (
     <button
       onClick={(e) => {
-        toggle();
+        onOpen();
         onClick?.(e);
       }}
       {...rest}
@@ -65,16 +69,21 @@ type ContentProps = React.HTMLAttributes<HTMLDivElement>;
 const Content = (props: ContentProps) => {
   const { children, ...rest } = props;
 
-  const { toggle, open } = useModal();
+  const { onClose, open } = useDrawer();
 
   const ref = useRef<HTMLDivElement>(null);
 
-  useOnClickOutside(ref, toggle);
+  useOnClickOutside(ref, onClose);
 
   if (!open) return null;
 
   return (
-    <div ref={ref} className="absolute right-0 top-0 z-10 h-full" {...rest}>
+    <div
+      ref={ref}
+      role="dialog"
+      className="absolute right-0 top-0 z-10 h-full"
+      {...rest}
+    >
       {children}
     </div>
   );
@@ -87,7 +96,7 @@ type CloseProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 const Close = (props: CloseProps) => {
   const { children, ...rest } = props;
 
-  const { toggle } = useModal();
+  const { toggle } = useDrawer();
 
   return (
     <button onClick={toggle} {...rest}>
@@ -101,7 +110,7 @@ type OverlayProps = React.HTMLAttributes<HTMLDivElement>;
 const Overlay = (props: OverlayProps) => {
   const { ...rest } = props;
 
-  const { open } = useModal();
+  const { open } = useDrawer();
 
   if (!open) return null;
 
@@ -125,11 +134,11 @@ const Portal = (props: PortalProps) => {
   return createPortal(<Fragment {...rest} />, container);
 };
 
-Modal.Root = Modal;
-Modal.Trigger = Trigger;
-Modal.Content = Content;
-Modal.Portal = Portal;
-Modal.Close = Close;
-Modal.Overlay = Overlay;
+Drawer.Root = Drawer;
+Drawer.Trigger = Trigger;
+Drawer.Content = Content;
+Drawer.Portal = Portal;
+Drawer.Close = Close;
+Drawer.Overlay = Overlay;
 
-export { Modal as Root, Trigger, Content, Portal, Close, Overlay };
+export { Drawer as Root, Trigger, Content, Portal, Close, Overlay };
