@@ -42,9 +42,7 @@ const useDrawer = () => {
   return context;
 };
 
-type TriggerProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  children: React.ReactNode;
-};
+type TriggerProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const Trigger = (props: TriggerProps) => {
   const { children, onClick, ...rest } = props;

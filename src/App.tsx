@@ -19,7 +19,6 @@ function App() {
                       <X />
                     </div>
                   </Drawer.Close>
-
                   <div className="flex flex-col p-4">
                     <h1 className="text-2xl font-semibold text-slate-900">
                       Drawer
@@ -28,7 +27,7 @@ function App() {
                   <div className="h-[1px] bg-slate-200" />
                   <div className="flex flex-col p-4">
                     <p className="text-slate-800">
-                      This is a Drawer component built with using the compound
+                      This is a Drawer component built using the compound
                       pattern.
                     </p>
                   </div>
